@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,27 +31,22 @@ public class TrackTimeAspect {
     public void trackAsyncTimePointcut() {
     }
 
-    public Object track(ProceedingJoinPoint proceedingJoinPoint) {
-        Object result = null;
-        try {
-            long startTime = System.currentTimeMillis();
+    public Object track(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
 
-            String className = proceedingJoinPoint.getSignature().getDeclaringType().getSimpleName();
-            String methodName = proceedingJoinPoint.getSignature().getName();
-            Object[] methodArgs = proceedingJoinPoint.getArgs();
+        String className = proceedingJoinPoint.getSignature().getDeclaringType().getSimpleName();
+        String methodName = proceedingJoinPoint.getSignature().getName();
+        Object[] methodArgs = proceedingJoinPoint.getArgs();
 
-            log.info("Выполнение метода {} с аргументами {}", methodName, methodArgs);
+        log.info("Выполнение метода {} с аргументами {}", methodName, methodArgs);
 
-            result = proceedingJoinPoint.proceed();
+        Object result = proceedingJoinPoint.proceed();
 
-            long endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
 
-            perfomanceStatisticsService.save(className, methodName, endTime - startTime);
+        perfomanceStatisticsService.save(className, methodName, endTime - startTime);
 
-            log.info("Метод {} выполнился за {} мс с результатом {}", methodName, endTime - startTime, result);
-        } catch (Throwable e) {
-            log.error("Ошибка AsyncRunnerAspect", e);
-        }
+        log.info("Метод {} выполнился за {} мс с результатом {}", methodName, endTime - startTime, result);
         return result;
     }
 
@@ -65,10 +59,11 @@ public class TrackTimeAspect {
     public Object trackAsyncTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         CompletableFuture<Object> cf = CompletableFuture.supplyAsync(() -> {
-            return track(proceedingJoinPoint);
-//        }).thenApply(obj -> {
-//            System.out.println(Thread.currentThread().getName());
-//            return obj;
+            try {
+                return track(proceedingJoinPoint);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         });
 
 //        todo вернуть CompletableFuture?
