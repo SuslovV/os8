@@ -67,9 +67,11 @@ public class PerfomanceStatisticsController {
             methodPerfomanceStatisticsDto.setMethodId((UUID) el[0]);
             methodPerfomanceStatisticsDto.setClassName((String) el[1]);
             methodPerfomanceStatisticsDto.setMethodName((String) el[2]);
-            methodPerfomanceStatisticsDto.setExecutionTimeSum(((BigDecimal) el[3]).longValue());
-            methodPerfomanceStatisticsDto.setExecutionTimeAvg(((BigDecimal) el[4]).longValue());
-            methodPerfomanceStatisticsDto.setCountCall((Long) el[5]);
+            methodPerfomanceStatisticsDto.setExecutionTimeSum(((Long) el[3]).longValue());
+            methodPerfomanceStatisticsDto.setExecutionTimeAvg(((Long) el[4]).longValue());
+            methodPerfomanceStatisticsDto.setExecutionTimeMin(((Long) el[5]).longValue());
+            methodPerfomanceStatisticsDto.setExecutionTimeMax(((Long) el[6]).longValue());
+            methodPerfomanceStatisticsDto.setCountCall((Long) el[7]);
             return methodPerfomanceStatisticsDto;
         }).collect(Collectors.toList());
     }

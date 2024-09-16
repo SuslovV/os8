@@ -14,16 +14,20 @@ public interface PerfomanceStatisticsRepository extends JpaRepository<Perfomance
     Optional<PerfomanceStatistics> findById(UUID id);
 
     @Query(value =
-            "SELECT m.id method_id,\n" +
+            "SELECT m.id     method_id,\n" +
                     "       csc.name class_name,\n" +
                     "       m.name   method_name,\n" +
                     "       execution_time_sum,\n" +
                     "       execution_time_avg,\n" +
+                    "       execution_time_min,\n" +
+                    "       execution_time_max,\n" +
                     "       count_call\n" +
                     "FROM (SELECT method_id,\n" +
-                    "             SUM(execution_time) execution_time_sum,\n" +
-                    "             AVG(execution_time) execution_time_avg,\n" +
-                    "             count(*)            count_call\n" +
+                    "             CAST(SUM(execution_time) AS BIGINT) execution_time_sum,\n" +
+                    "             CAST(AVG(execution_time) AS BIGINT) execution_time_avg,\n" +
+                    "             CAST(MIN(execution_time) AS BIGINT) execution_time_min,\n" +
+                    "             CAST(MAX(execution_time) AS BIGINT) execution_time_max,\n" +
+                    "             CAST(count(*) AS BIGINT)            count_call\n" +
                     "      FROM perfomance_statistics\n" +
                     "      GROUP BY method_id) ps\n" +
                     "         LEFT JOIN method m on m.id = ps.method_id\n" +

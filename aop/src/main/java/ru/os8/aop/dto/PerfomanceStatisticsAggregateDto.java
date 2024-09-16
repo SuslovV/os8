@@ -14,6 +14,8 @@ public class PerfomanceStatisticsAggregateDto {
 
     private long executionTimeSum;
     private long executionTimeAvg;
+    private long executionTimeMin;
+    private long executionTimeMax;
     private long countCall;
 
 }
