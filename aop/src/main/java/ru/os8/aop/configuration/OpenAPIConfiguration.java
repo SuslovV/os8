@@ -6,14 +6,10 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 @Configuration
 public class OpenAPIConfiguration {
 
     @Bean
-//	public OpenAPI customOpenAPI(@Value("${application-description}") String appDesciption,
-//								 @Value("${application-version}") String appVersion) {
     public OpenAPI customOpenAPI() {
         String appDesciption = "AOP";
         String appVersion = "";

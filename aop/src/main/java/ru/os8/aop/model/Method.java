@@ -32,7 +32,6 @@ public class Method {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-//    @Column(length = 200, unique = true)
     @Column(length = 200)
     private String name;
 

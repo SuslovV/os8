@@ -20,7 +20,6 @@ import ru.os8.aop.dto.PerfomanceStatisticsDto;
 import ru.os8.aop.service.PerfomanceStatisticsService;
 
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
