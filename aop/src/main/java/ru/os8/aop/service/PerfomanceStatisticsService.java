@@ -36,26 +36,12 @@ public class PerfomanceStatisticsService {
         return perfomanceStatisticsRepository.findById(id);
     }
 
-    private String runAsyncProcess() {
-        log.info("asyncProcess method");
-        try{
-            Thread.sleep(4000);
-        } catch (Exception e) {
-            log.error("sleep have gone wrong");
-        }
-        log.info("async processing completed");
-        return "yes 5";
-    }
-
-    @Async
-    @TrackAsyncTime
-    public CompletableFuture<String> testAsync() {
-        return CompletableFuture.completedFuture(runAsyncProcess());
-//        SupplyAsync sa = new SupplyAsync(monitoringService, monitoringData, () -> runAsyncProcess());
-//        return CompletableFuture.supplyAsync(sa);
-    }
-
     public Page<PerfomanceStatistics> findAll(Pageable pageable) {
+//        try{
+//            Thread.sleep(2000);
+//        } catch (Exception e) {
+//            log.error("sleep have gone wrong");
+//        }
         return perfomanceStatisticsRepository.findAll(pageable);
     }
 

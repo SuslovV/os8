@@ -32,61 +32,39 @@ public class TrackTimeAspect {
     public void trackAsyncTimePointcut() {
     }
 
-    public Object track(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    private void savePerfomanceStatistics(long startTime, String className, String methodName, Object result) {
+        long endTime = System.currentTimeMillis();
+        perfomanceStatisticsService.save(className, methodName, endTime - startTime);
+        log.info("Метод {} выполнился за {} мс с результатом {}", methodName, endTime - startTime, result);
+    }
+
+    private Object trackTime(ProceedingJoinPoint proceedingJoinPoint, boolean trackAsync) throws Throwable {
         long startTime = System.currentTimeMillis();
 
         String className = proceedingJoinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = proceedingJoinPoint.getSignature().getName();
-        Object[] methodArgs = proceedingJoinPoint.getArgs();
 
-        log.info("Выполнение метода {} с аргументами {}", methodName, methodArgs);
+        log.info("Выполнение метода {}", methodName);
 
         Object result = proceedingJoinPoint.proceed();
 
-        long endTime = System.currentTimeMillis();
+        if (!trackAsync) {
+            savePerfomanceStatistics(startTime, className, methodName, result);
+        } else {
+            CompletableFuture future = (CompletableFuture) result;
+            future.thenAccept(o -> savePerfomanceStatistics(startTime, className, methodName, result));
+        }
 
-        perfomanceStatisticsService.save(className, methodName, endTime - startTime);
-
-        log.info("Метод {} выполнился за {} мс с результатом {}", methodName, endTime - startTime, result);
         return result;
     }
 
     @Around("trackTimePointcut()")
     public Object trackTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        return track(proceedingJoinPoint);
+        return trackTime(proceedingJoinPoint, false);
     }
 
     @Around("trackAsyncTimePointcut()")
     public Object trackAsyncTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        long startTime = System.currentTimeMillis();
-
-        String className = proceedingJoinPoint.getSignature().getDeclaringType().getSimpleName();
-        String methodName = proceedingJoinPoint.getSignature().getName();
-        Object[] methodArgs = proceedingJoinPoint.getArgs();
-
-        Object proceed = proceedingJoinPoint.proceed();
-        if (proceed instanceof CompletableFuture) {
-            CompletableFuture future = (CompletableFuture) proceed;
-            future.thenAccept(futureReturnValue -> {
-
-                if (futureReturnValue instanceof AsyncResult) {
-                    AsyncResult result = (AsyncResult) futureReturnValue;
-                    if (result.isDone()) {
-                        log.info("Метод {} выполнился за {} мс с результатом {}", result);
-//                        monitoringService.end(result.getRunTime());
-                    } else {
-//                        monitoringService.processException(result.getException());
-                    }
-                }
-            });
-        } else {
-            log.error("Async method does not return CompletableFuture");
-        }
-
-        long endTime = System.currentTimeMillis();
-
-        perfomanceStatisticsService.save(className, methodName, endTime - startTime);
-
-        return proceed;
+        return trackTime(proceedingJoinPoint, true);
     }
 }

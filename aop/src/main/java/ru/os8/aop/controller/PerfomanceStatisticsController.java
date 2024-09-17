@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
 public class PerfomanceStatisticsController {
     private final PerfomanceStatisticsService perfomanceStatisticsService;
     private final ModelMapper modelMapper;
-    private final Type listType = new TypeToken<List<PerfomanceStatisticsDto>>(){}.getType();
+    private final Type listType = new TypeToken<List<PerfomanceStatisticsDto>>() {
+    }.getType();
 
     @Autowired
     public PerfomanceStatisticsController(PerfomanceStatisticsService perfomanceStatisticsService, ModelMapper modelMapper) {
@@ -49,9 +50,10 @@ public class PerfomanceStatisticsController {
             })
     })
     @GetMapping("/perfomancestatistics")
-    public List<PerfomanceStatisticsDto> perfomanceStatistics(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) throws ExecutionException, InterruptedException {
-        perfomanceStatisticsService.testAsync();
-        return modelMapper.map(perfomanceStatisticsService.findAll(pageable).getContent(), listType);
+    @TrackAsyncTime
+    @Async
+    public CompletableFuture<List<PerfomanceStatisticsDto>> perfomanceStatistics(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) {
+        return CompletableFuture.supplyAsync(() -> modelMapper.map(perfomanceStatisticsService.findAll(pageable).getContent(), listType));
     }
 
     @Operation(summary = "get list aggregate PerfomanceStatistics")
