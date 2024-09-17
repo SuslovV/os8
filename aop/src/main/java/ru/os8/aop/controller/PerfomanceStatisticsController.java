@@ -1,6 +1,7 @@
 package ru.os8.aop.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -43,10 +44,11 @@ public class PerfomanceStatisticsController {
         this.modelMapper = modelMapper;
     }
 
-    @Operation(summary = "get list PerfomanceStatistics")
+    @Operation(summary = "Get a list of perfomance statistics")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = PerfomanceStatisticsDto.class), mediaType = "application/json")
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = PerfomanceStatisticsDto.class)),
+                            mediaType = "application/json")
             })
     })
     @GetMapping("/perfomancestatistics")
@@ -56,10 +58,11 @@ public class PerfomanceStatisticsController {
         return CompletableFuture.supplyAsync(() -> modelMapper.map(perfomanceStatisticsService.findAll(pageable).getContent(), listType));
     }
 
-    @Operation(summary = "get list aggregate PerfomanceStatistics")
+    @Operation(summary = "Get a list of aggregate perfomance statistics")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = PerfomanceStatisticsAggregateDto.class), mediaType = "application/json")
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = PerfomanceStatisticsAggregateDto.class)),
+                            mediaType = "application/json")
             })
     })
     @GetMapping("/perfomancestatistics/aggregate")

@@ -1,6 +1,7 @@
 package ru.os8.aop.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,7 +29,8 @@ public class MethodController {
     private final Logger logger = LoggerFactory.getLogger(MethodController.class.getName());
     private final MethodService methodService;
     private final ModelMapper modelMapper;
-    private final Type listType = new TypeToken<List<MethodDto>>(){}.getType();
+    private final Type listType = new TypeToken<List<MethodDto>>() {
+    }.getType();
 
     @Autowired
     public MethodController(MethodService methodService, ModelMapper modelMapper) {
@@ -36,10 +38,11 @@ public class MethodController {
         this.modelMapper = modelMapper;
     }
 
-    @Operation(summary = "get list Methods")
+    @Operation(summary = "Get a list of methods")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = Method.class), mediaType = "application/json")
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = MethodDto.class)),
+                            mediaType = "application/json")
             })
     })
     @GetMapping("/methods")
@@ -47,7 +50,7 @@ public class MethodController {
         return modelMapper.map(methodService.findAll(pageable).getContent(), listType);
     }
 
-    @Operation(summary = "add Method")
+    @Operation(summary = "Add method")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {
                     @Content(schema = @Schema(implementation = Method.class), mediaType = "application/json")
