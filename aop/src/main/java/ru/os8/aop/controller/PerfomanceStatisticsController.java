@@ -12,6 +12,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import ru.os8.aop.annotation.TrackAsyncTime;
 import ru.os8.aop.annotation.TrackTime;
@@ -23,6 +24,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,8 +49,8 @@ public class PerfomanceStatisticsController {
             })
     })
     @GetMapping("/perfomancestatistics")
-    @TrackAsyncTime
-    public List<PerfomanceStatisticsDto> perfomanceStatistics(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) {
+    public List<PerfomanceStatisticsDto> perfomanceStatistics(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) throws ExecutionException, InterruptedException {
+        perfomanceStatisticsService.testAsync();
         return modelMapper.map(perfomanceStatisticsService.findAll(pageable).getContent(), listType);
     }
 

@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import ru.os8.aop.service.PerfomanceStatisticsService;
 
@@ -57,17 +58,35 @@ public class TrackTimeAspect {
 
     @Around("trackAsyncTimePointcut()")
     public Object trackAsyncTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
 
-        CompletableFuture<Object> cf = CompletableFuture.supplyAsync(() -> {
-            try {
-                return track(proceedingJoinPoint);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        });
+        String className = proceedingJoinPoint.getSignature().getDeclaringType().getSimpleName();
+        String methodName = proceedingJoinPoint.getSignature().getName();
+        Object[] methodArgs = proceedingJoinPoint.getArgs();
 
-//        todo вернуть CompletableFuture?
-//        todo exceptions
-        return cf.get();
+        Object proceed = proceedingJoinPoint.proceed();
+        if (proceed instanceof CompletableFuture) {
+            CompletableFuture future = (CompletableFuture) proceed;
+            future.thenAccept(futureReturnValue -> {
+
+                if (futureReturnValue instanceof AsyncResult) {
+                    AsyncResult result = (AsyncResult) futureReturnValue;
+                    if (result.isDone()) {
+                        log.info("Метод {} выполнился за {} мс с результатом {}", result);
+//                        monitoringService.end(result.getRunTime());
+                    } else {
+//                        monitoringService.processException(result.getException());
+                    }
+                }
+            });
+        } else {
+            log.error("Async method does not return CompletableFuture");
+        }
+
+        long endTime = System.currentTimeMillis();
+
+        perfomanceStatisticsService.save(className, methodName, endTime - startTime);
+
+        return proceed;
     }
 }

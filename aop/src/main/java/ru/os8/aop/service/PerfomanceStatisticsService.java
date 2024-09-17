@@ -1,10 +1,13 @@
 package ru.os8.aop.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import ru.os8.aop.annotation.TrackAsyncTime;
+import ru.os8.aop.annotation.TrackTime;
 import ru.os8.aop.model.PerfomanceStatistics;
 import ru.os8.aop.repository.PerfomanceStatisticsRepository;
 
@@ -15,6 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 public class PerfomanceStatisticsService {
 
     private final PerfomanceStatisticsRepository perfomanceStatisticsRepository;
@@ -30,6 +34,25 @@ public class PerfomanceStatisticsService {
 
     public Optional<PerfomanceStatistics> findById(UUID id) {
         return perfomanceStatisticsRepository.findById(id);
+    }
+
+    private String runAsyncProcess() {
+        log.info("asyncProcess method");
+        try{
+            Thread.sleep(4000);
+        } catch (Exception e) {
+            log.error("sleep have gone wrong");
+        }
+        log.info("async processing completed");
+        return "yes 5";
+    }
+
+    @Async
+    @TrackAsyncTime
+    public CompletableFuture<String> testAsync() {
+        return CompletableFuture.completedFuture(runAsyncProcess());
+//        SupplyAsync sa = new SupplyAsync(monitoringService, monitoringData, () -> runAsyncProcess());
+//        return CompletableFuture.supplyAsync(sa);
     }
 
     public Page<PerfomanceStatistics> findAll(Pageable pageable) {
