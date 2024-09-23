@@ -1,4 +1,4 @@
-package ru.suslov.http_logging.service;
+package ru.suslov.http_logging_spring_boot_starter.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import ru.suslov.http_logging.model.HttpRequestLog;
-import ru.suslov.http_logging.repository.HttpRequesLogtRepository;
+import ru.suslov.http_logging_spring_boot_starter.model.HttpRequestLog;
+import ru.suslov.http_logging_spring_boot_starter.repository.HttpRequesLogtRepository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,16 +20,17 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class HttpRequestLogService {
 
-    private final ClassSourceCodeService classSourceCodeService;
-    private final HttpRequesLogtRepository httpRequesLogtRepository;
-    private final MethodSourceCodeService methodSourceCodeService;
-
     @Autowired
-    public HttpRequestLogService(HttpRequesLogtRepository httpRequesLogtRepository, ClassSourceCodeService classSourceCodeService, MethodSourceCodeService methodSourceCodeService) {
-        this.httpRequesLogtRepository = httpRequesLogtRepository;
-        this.classSourceCodeService = classSourceCodeService;
-        this.methodSourceCodeService = methodSourceCodeService;
-    }
+    private  ServerService serverService;
+    private  HttpRequesLogtRepository httpRequesLogtRepository;
+    private  ResourceService resourceService;
+
+//    @Autowired
+//    public HttpRequestLogService(HttpRequesLogtRepository httpRequesLogtRepository, ServerService serverService, ResourceService resourceService) {
+//        this.httpRequesLogtRepository = httpRequesLogtRepository;
+//        this.serverService = serverService;
+//        this.resourceService = resourceService;
+//    }
 
     public Optional<HttpRequestLog> findById(UUID id) {
         return httpRequesLogtRepository.findById(id);
@@ -52,20 +54,21 @@ public class HttpRequestLogService {
     }
 
     @Async
-    public CompletableFuture<HttpRequestLog> save(String className, String methodName, String method, Long executionTime, boolean response, UUID httpRequestId) {
-        var classSourceCode = classSourceCodeService.findByName(className).orElseGet(() -> classSourceCodeService.add(className)); // todo  сразу поиск метода
-        var methodSourceCode = methodSourceCodeService.findByNameAndClassSourceCode(methodName, classSourceCode).orElseGet(() -> methodSourceCodeService.add(methodName, classSourceCode));
+    public CompletableFuture<HttpRequestLog> save(String serverName, String resourceName, String method, Map<String, String> headers, Long executionTime, boolean response, UUID httpRequestId) {
+        var server = serverService.findByName(serverName).orElseGet(() -> serverService.add(serverName)); // todo  сразу поиск  ресурса по имени и сервер id
+        var resource = resourceService.findByNameAndServer(resourceName, server).orElseGet(() -> resourceService.add(resourceName, server));
 
-        var httpRequest = new HttpRequestLog();
-        httpRequest.setMethodSourceCode(methodSourceCode);
-        httpRequest.setMethod(method);
-        httpRequest.setResponse(response);
-        httpRequest.setHttpRequestId(httpRequestId);
-        httpRequest.setExecutionTime(executionTime);
-        httpRequest.setCreatedTime(OffsetDateTime.now());
-        httpRequest.setLastModifiedTime(httpRequest.getCreatedTime());
+        var httpRequestLog = new HttpRequestLog();
+        httpRequestLog.setResource(resource);
+        httpRequestLog.setMethod(method);
+        httpRequestLog.setHeaders(headers);
+        httpRequestLog.setResponse(response);
+        httpRequestLog.setHttpRequestId(httpRequestId);
+        httpRequestLog.setExecutionTime(executionTime);
+        httpRequestLog.setCreatedTime(OffsetDateTime.now());
+        httpRequestLog.setLastModifiedTime(httpRequestLog.getCreatedTime());
 
-        return CompletableFuture.completedFuture(httpRequesLogtRepository.save(httpRequest));
+        return CompletableFuture.completedFuture(httpRequesLogtRepository.save(httpRequestLog));
     }
 
     public void delete(HttpRequestLog httpRequestLog) {

@@ -8,15 +8,25 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>ru.suslov</groupId>
-	<artifactId>http-logging</artifactId>
+	<artifactId>http-logging-spring-boot-starter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>http-logging</name>
-	<description>http-logging</description>
+<!--	<packaging>war</packaging>-->
+	<name>http-logging-spring-boot-starter</name>
+	<description>Http logging spring boot starter</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<version>${spring-boot.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+			<version>${spring-boot.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -64,7 +74,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-		<finalName>http-logging</finalName>
+<!--		<finalName>http-logging-spring-boot-starter</finalName>-->
 	</build>
 
 </project>

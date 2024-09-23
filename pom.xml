@@ -28,7 +28,7 @@
 	<description>os 8</description>
 	<modules>
 <!--		<module>authentification</module>-->
-		<module>http-logging</module>
+		<module>http-logging-spring-boot-starter</module>
 		<module>perfomance-statistics</module>
 	</modules>
 	<properties>

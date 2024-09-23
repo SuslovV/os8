@@ -1,4 +1,4 @@
-package ru.suslov.http_logging;
+package ru.suslov.http_logging_spring_boot_starter;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

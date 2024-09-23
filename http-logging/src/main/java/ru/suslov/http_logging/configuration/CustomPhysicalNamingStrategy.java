@@ -1,4 +1,4 @@
-package ru.suslov.http_logging.configuration;
+package ru.suslov.http_logging_spring_boot_starter.configuration;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;

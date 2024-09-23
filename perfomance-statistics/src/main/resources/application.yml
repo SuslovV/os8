@@ -33,3 +33,6 @@ spring-doc:
     tryItOutEnabled: true
     filter: true
     tagsSorter: alpha
+
+http-logging:
+  enabled: true

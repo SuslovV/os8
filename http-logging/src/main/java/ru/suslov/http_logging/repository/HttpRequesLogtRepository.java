@@ -1,9 +1,9 @@
-package ru.suslov.http_logging.repository;
+package ru.suslov.http_logging_spring_boot_starter.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.suslov.http_logging.model.HttpRequestLog;
+import ru.suslov.http_logging_spring_boot_starter.model.HttpRequestLog;
 
 import java.util.List;
 import java.util.Optional;

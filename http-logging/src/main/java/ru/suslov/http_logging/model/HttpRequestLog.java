@@ -1,11 +1,14 @@
-package ru.suslov.http_logging.model;
+package ru.suslov.http_logging_spring_boot_starter.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -20,8 +23,8 @@ public class HttpRequestLog {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "method_source_code_id")
-    private MethodSourceCode methodSourceCode;
+    @JoinColumn(name = "resource_id")
+    private Resource resource;
 
     @Column
     private Long executionTime;
@@ -36,6 +39,10 @@ public class HttpRequestLog {
 
     @Column
     private String method;
+
+    @Column
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> headers;
 
     @Column
     private UUID httpRequestId;

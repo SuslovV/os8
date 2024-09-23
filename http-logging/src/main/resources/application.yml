@@ -11,7 +11,7 @@ spring:
     hibernate:
       ddl-auto: update
       naming:
-        physical-strategy: ru.suslov.http_logging.configuration.CustomPhysicalNamingStrategy
+        physical-strategy: ru.suslov.http_logging_spring_boot_starter.configuration.CustomPhysicalNamingStrategy
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -23,7 +23,7 @@ logging:
       max-history: ${LOG_MAX_FILE:10}
 
 spring-doc:
-  packages-to-scan: ru.suslov.http_logging.controller
+  packages-to-scan: ru.suslov.http_logging_spring_boot_starter.controller
   api-docs:
     enabled: true
   swagger-ui:
@@ -33,3 +33,6 @@ spring-doc:
     tryItOutEnabled: true
     filter: true
     tagsSorter: alpha
+
+http-logging:
+  enabled: true
