@@ -15,12 +15,13 @@ import java.util.UUID;
 @Service
 public class ResourceService {
 
-    private final ResourceRepository resourceRepository;
-
     @Autowired
-    public ResourceService(ResourceRepository resourceRepository) {
-        this.resourceRepository = resourceRepository;
-    }
+    private ResourceRepository resourceRepository;
+
+//    @Autowired
+//    public ResourceService(ResourceRepository resourceRepository) {
+//        this.resourceRepository = resourceRepository;
+//    }
 
     public Optional<Resource> findById(UUID id) {
         return resourceRepository.findById(id);

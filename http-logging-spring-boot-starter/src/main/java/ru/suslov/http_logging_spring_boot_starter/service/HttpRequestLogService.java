@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.suslov.http_logging_spring_boot_starter.model.HttpRequestLog;
-import ru.suslov.http_logging_spring_boot_starter.repository.HttpRequesLogtRepository;
+import ru.suslov.http_logging_spring_boot_starter.repository.HttpRequestLogRepository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -22,7 +22,9 @@ public class HttpRequestLogService {
 
     @Autowired
     private  ServerService serverService;
-    private  HttpRequesLogtRepository httpRequesLogtRepository;
+    @Autowired
+    private HttpRequestLogRepository httpRequestLogRepository;
+    @Autowired
     private  ResourceService resourceService;
 
 //    @Autowired
@@ -33,7 +35,7 @@ public class HttpRequestLogService {
 //    }
 
     public Optional<HttpRequestLog> findById(UUID id) {
-        return httpRequesLogtRepository.findById(id);
+        return httpRequestLogRepository.findById(id);
     }
 
     public Page<HttpRequestLog> findAll(Pageable pageable) {
@@ -42,15 +44,15 @@ public class HttpRequestLogService {
 //        } catch (Exception e) {
 //            log.error("sleep have gone wrong");
 //        }
-        return httpRequesLogtRepository.findAll(pageable);
+        return httpRequestLogRepository.findAll(pageable);
     }
 
     public List<Object[]> getPerfomanceStatisticsGroupByMethod() {
-        return httpRequesLogtRepository.getHttpRequestGroupByMethod();
+        return httpRequestLogRepository.getHttpRequestGroupByMethod();
     }
 
     public HttpRequestLog save(HttpRequestLog httpRequestLog) {
-        return httpRequesLogtRepository.save(httpRequestLog);
+        return httpRequestLogRepository.save(httpRequestLog);
     }
 
     @Async
@@ -68,11 +70,11 @@ public class HttpRequestLogService {
         httpRequestLog.setCreatedTime(OffsetDateTime.now());
         httpRequestLog.setLastModifiedTime(httpRequestLog.getCreatedTime());
 
-        return CompletableFuture.completedFuture(httpRequesLogtRepository.save(httpRequestLog));
+        return CompletableFuture.completedFuture(httpRequestLogRepository.save(httpRequestLog));
     }
 
     public void delete(HttpRequestLog httpRequestLog) {
-        httpRequesLogtRepository.delete(httpRequestLog);
+        httpRequestLogRepository.delete(httpRequestLog);
     }
 
 }

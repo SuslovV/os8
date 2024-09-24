@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface HttpRequesLogtRepository extends JpaRepository<HttpRequestLog, UUID> {
+public interface HttpRequestLogRepository extends JpaRepository<HttpRequestLog, UUID> {
     Optional<HttpRequestLog> findById(UUID id);
 
     @Query(value =
