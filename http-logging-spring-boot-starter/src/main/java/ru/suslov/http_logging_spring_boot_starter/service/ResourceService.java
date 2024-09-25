@@ -18,11 +18,6 @@ public class ResourceService {
     @Autowired
     private ResourceRepository resourceRepository;
 
-//    @Autowired
-//    public ResourceService(ResourceRepository resourceRepository) {
-//        this.resourceRepository = resourceRepository;
-//    }
-
     public Optional<Resource> findById(UUID id) {
         return resourceRepository.findById(id);
     }

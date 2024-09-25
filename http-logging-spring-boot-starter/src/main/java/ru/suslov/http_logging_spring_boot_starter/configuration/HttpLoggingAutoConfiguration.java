@@ -1,6 +1,5 @@
 package ru.suslov.http_logging_spring_boot_starter.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -11,8 +10,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import ru.suslov.http_logging_spring_boot_starter.controller.RequestResponseLoggingFilter;
-import ru.suslov.http_logging_spring_boot_starter.repository.HttpRequestLogRepository;
+import ru.suslov.http_logging_spring_boot_starter.controller.ServletFilter;
+import ru.suslov.http_logging_spring_boot_starter.controller.RequestResponseLoggingInterceptor;
 import ru.suslov.http_logging_spring_boot_starter.service.HttpRequestLogService;
 import ru.suslov.http_logging_spring_boot_starter.service.ResourceService;
 import ru.suslov.http_logging_spring_boot_starter.service.ServerService;
@@ -26,12 +25,16 @@ import ru.suslov.http_logging_spring_boot_starter.service.ServerService;
 @ConditionalOnProperty(prefix = "http-logging", value = "enabled", havingValue = "true", matchIfMissing = false)
 public class HttpLoggingAutoConfiguration {
 
-    private HttpRequestLogRepository httpRequestLogRepository;
+    @Bean
+    @ConditionalOnMissingBean
+    public ServletFilter requestResponseLoggingFilter() {
+        return new ServletFilter();
+    }
 
     @Bean
     @ConditionalOnMissingBean
-    public RequestResponseLoggingFilter requestResponseLoggingFilter() {
-        return new RequestResponseLoggingFilter();
+    public RequestResponseLoggingInterceptor requestResponseLoggingInterceptor() {
+        return new RequestResponseLoggingInterceptor(httpRequestLogService());
     }
 
     @Bean

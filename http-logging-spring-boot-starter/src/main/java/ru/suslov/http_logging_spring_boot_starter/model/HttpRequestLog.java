@@ -29,16 +29,19 @@ public class HttpRequestLog {
     @Column
     private Long executionTime;
 
-//    @Column
-//    todo переименовать
-//    private TypeRequest typeRequest; / input output
-
     @Column
 //    todo переименовать
     private boolean response;
 
     @Column
     private String method;
+
+    @Column
+    private Integer httpStatus;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private RequestType requestType;
 
     @Column
     @JdbcTypeCode(SqlTypes.JSON)

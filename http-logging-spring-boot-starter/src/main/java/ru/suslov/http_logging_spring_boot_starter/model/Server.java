@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "nameIndex", columnList = "name", unique = true)
+        @Index(name = "name_column_index", columnList = "name", unique = true)
 })
 @Data
 @RequiredArgsConstructor

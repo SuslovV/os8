@@ -17,11 +17,6 @@ public class ServerService {
     @Autowired
     private ServerRepository serverRepository;
 
-//    @Autowired
-//    public ServerService(ServerRepository serverRepository) {
-//        this.serverRepository = serverRepository;
-//    }
-
     public Optional<Server> findById(UUID id) {
         return serverRepository.findById(id);
     }
