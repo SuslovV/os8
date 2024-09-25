@@ -15,12 +15,12 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class RequestResponseLoggingInterceptor implements ClientHttpRequestInterceptor {
+public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
     private final HttpRequestLogService httpRequestLogService;
 
     @Autowired
-    public RequestResponseLoggingInterceptor(HttpRequestLogService httpRequestLogService) {
+    public RestTemplateInterceptor(HttpRequestLogService httpRequestLogService) {
         this.httpRequestLogService = httpRequestLogService;
     }
 

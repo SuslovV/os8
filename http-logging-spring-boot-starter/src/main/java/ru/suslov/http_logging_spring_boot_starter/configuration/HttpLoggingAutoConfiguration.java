@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import ru.suslov.http_logging_spring_boot_starter.controller.ServletFilter;
-import ru.suslov.http_logging_spring_boot_starter.controller.RequestResponseLoggingInterceptor;
+import ru.suslov.http_logging_spring_boot_starter.controller.RestTemplateInterceptor;
 import ru.suslov.http_logging_spring_boot_starter.service.HttpRequestLogService;
 import ru.suslov.http_logging_spring_boot_starter.service.ResourceService;
 import ru.suslov.http_logging_spring_boot_starter.service.ServerService;
@@ -27,14 +27,14 @@ public class HttpLoggingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ServletFilter requestResponseLoggingFilter() {
+    public ServletFilter servletFilter() {
         return new ServletFilter();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RequestResponseLoggingInterceptor requestResponseLoggingInterceptor() {
-        return new RequestResponseLoggingInterceptor(httpRequestLogService());
+    public RestTemplateInterceptor restTemplateInterceptor() {
+        return new RestTemplateInterceptor(httpRequestLogService());
     }
 
     @Bean

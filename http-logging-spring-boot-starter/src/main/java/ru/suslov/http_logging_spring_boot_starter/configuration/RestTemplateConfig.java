@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import ru.suslov.http_logging_spring_boot_starter.controller.RequestResponseLoggingInterceptor;
+import ru.suslov.http_logging_spring_boot_starter.controller.RestTemplateInterceptor;
 import ru.suslov.http_logging_spring_boot_starter.service.HttpRequestLogService;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
 
-        restTemplate.setInterceptors(Collections.singletonList(new RequestResponseLoggingInterceptor(httpRequestLogService)));
+        restTemplate.setInterceptors(Collections.singletonList(new RestTemplateInterceptor(httpRequestLogService)));
 
         return restTemplate;
     }
