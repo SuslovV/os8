@@ -7,10 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,8 +24,8 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/v1")
+@Slf4j
 public class MethodController {
-    private final Logger logger = LoggerFactory.getLogger(MethodController.class.getName());
     private final MethodService methodService;
     private final ModelMapper modelMapper;
     private final Type listType = new TypeToken<List<MethodDto>>() {
