@@ -16,6 +16,11 @@ spring:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
 
+jwt:
+  secret: 2b44b0b00ffbbc0a51e490438a97b2
+  expirationTime: 1m
+  refreshTokenExpiration: 10m
+
 logging:
   logback:
     rollingpolicy:

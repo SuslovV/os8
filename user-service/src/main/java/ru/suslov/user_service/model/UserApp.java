@@ -4,19 +4,21 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import ru.suslov.user_service.controller.JpaConverterJsonSetOfString;
 
 import java.time.OffsetDateTime;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "user_name_index", columnList = "username", unique = true)
+        @Index(name = "user_name_index", columnList = "username", unique = true),
+        @Index(name = "email_index", columnList = "email", unique = true)
 })
 @Data
 @RequiredArgsConstructor
-public class User {
+public class UserApp {
 
     @Id
     @UuidGenerator
@@ -37,6 +39,12 @@ public class User {
     @Convert(converter = JpaConverterJsonSetOfString.class)
     @Column(length = 65535)
     private Set<Role> roles;
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.name())));
+        return authorities;
+    }
 
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime createdTime;
