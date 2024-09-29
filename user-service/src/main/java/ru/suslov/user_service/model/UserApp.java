@@ -42,7 +42,7 @@ public class UserApp {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.name())));
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.name())));
         return authorities;
     }
 

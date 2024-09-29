@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import ru.suslov.user_service.dto.BearerToken;
 import ru.suslov.user_service.dto.UserAppDto;
-import ru.suslov.user_service.model.UserApp;
 import ru.suslov.user_service.service.UserAppService;
 
 import java.util.List;
@@ -39,25 +37,47 @@ class UserAppControllerTest {
     }
 
 //    @Test
-//    void getUserAppPage() {
-//        var response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/users?page=0&size=100", HttpMethod.GET, null,
-//                new ParameterizedTypeReference<List<UserAppDto>>() {
-//                });
-////        userStatisticsService.save(PerfomanceStatisticsController.class.getName(), , 10);
+//    void postUserApp() {
+//        JSONObject personJson = new JSONObject();
+//        personJson.put("username", "Ivanov2000");
+//        personJson.put("firstName", "Petr");
+//        personJson.put("secondName", "Ivanov");
+//
+//        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/users", personJson, UserAppDto.class);
 //        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+//
+//        userAppService.delete(userAppService.findById(response.getBody().getId()).orElse(null));
 //    }
 
     @Test
-    void postUserApp() {
+    void getHealthWithoutAuth() {
+        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/admin/health", UserAppDto.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    private BearerToken getAuthHeaderForUser() {
         JSONObject personJson = new JSONObject();
         personJson.put("username", "Ivanov2000");
         personJson.put("firstName", "Petr");
         personJson.put("secondName", "Ivanov");
+        personJson.put("email", "ivanov@yandex.ru");
+        personJson.put("password", "password");
 
-        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/users", personJson, UserAppDto.class);
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/register", personJson, BearerToken.class);
+
+        return response.getBody();
+    }
+
+    @Test
+    void getHealth() {
+        BearerToken tokent = getAuthHeaderForUser();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + tokent.getAccessToken());
+        ResponseEntity<String> response = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+//        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/admin/health", UserAppDto.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        userAppService.delete(userAppService.findById(response.getBody().getId()).orElse(null));
     }
 
 }

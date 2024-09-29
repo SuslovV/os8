@@ -27,7 +27,7 @@ public class JpaConverterJsonSetOfString implements AttributeConverter<Set<Role>
     public Set<Role> convertToEntityAttribute(String dbData) {
         if (dbData == null) return Collections.emptySet();
         try {
-            return objectMapper.readValue(dbData, Set.class);
+            return objectMapper.readValue(dbData, objectMapper.getTypeFactory().constructCollectionType(Set.class, Role.class));
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;

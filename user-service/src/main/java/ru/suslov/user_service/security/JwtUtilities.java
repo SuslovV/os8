@@ -3,7 +3,6 @@ package ru.suslov.user_service.security;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -18,11 +17,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtilities {
 
-//    @Value("${jwt.secret}")
+    //    @Value("${jwt.secret}") // todo
     private String jwtSecret = "2b44b0b00ffbbc0a51e490438a97b2";
 
-//    @Value("${jwt.expirationTime}") // todo
-    private Long jwtExpirationTime = 10_000L;
+    //    @Value("${jwt.expirationTime}") // todo
+    private Long jwtExpirationTime = 60_000L;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
