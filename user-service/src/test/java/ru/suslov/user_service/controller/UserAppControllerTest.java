@@ -83,7 +83,7 @@ class UserAppControllerTest {
     @Test
     void getHealthWithAuthenticate() {
         JSONObject userJson = new JSONObject();
-        userJson.put("email", "ivanov@yandex.ru");
+        userJson.put("username", "Ivanov2000");
         userJson.put("password", "password");
 
         var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", userJson, BearerToken.class);

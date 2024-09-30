@@ -16,9 +16,11 @@ import ru.suslov.user_service.dto.LoginDto;
 import ru.suslov.user_service.dto.RegisterUserDto;
 import ru.suslov.user_service.model.Role;
 import ru.suslov.user_service.model.UserApp;
+import ru.suslov.user_service.model.UserAppPrincipal;
 import ru.suslov.user_service.repository.UserAppRepository;
 import ru.suslov.user_service.security.JwtUtilities;
 
+import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -76,15 +78,18 @@ public class UserAppService {
         userAppRepository.delete(userApp);
     }
 
-//    public ResponseEntity<?> register(RegisterUserDto registerUserDto) {
+    //    public ResponseEntity<?> register(RegisterUserDto registerUserDto) {
     public BearerToken register(RegisterUserDto registerUserDto) throws Exception {
         if (userAppRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
             throw new Exception("email is already taken");
 //            return new ResponseEntity<>("email is already taken !", HttpStatus.SEE_OTHER);
+        } else if (userAppRepository.findByUsername(registerUserDto.getUsername()).isPresent()) {
+            throw new Exception("username is already taken");
         } else {
             UserApp userApp = new UserApp();
             userApp.setEmail(registerUserDto.getEmail());
             userApp.setFirstName(registerUserDto.getFirstName());
+            userApp.setUsername(registerUserDto.getUsername());
             userApp.setSecondName(registerUserDto.getSecondName());
             userApp.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
             userApp.setRoles(Collections.singleton(Role.ADMIN));
@@ -94,22 +99,27 @@ public class UserAppService {
             userApp.setDeleted(Boolean.FALSE);
 
             userAppRepository.save(userApp);
-            String token = jwtUtilities.generateToken(registerUserDto.getEmail(), userApp.getRoles().stream().map(Enum::name).toList());
+            String token = jwtUtilities.generateToken(registerUserDto.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
 //            return new ResponseEntity<>(new BearerToken(token, "Bearer"), HttpStatus.OK);
             return new BearerToken(token, "Bearer");
         }
     }
 
     public BearerToken authenticate(LoginDto loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getEmail(),
-                        loginDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserApp userApp = userAppRepository.findByEmail(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        UserApp userApp = userAppRepository.findByUsername(loginDto.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        // todo проверить пар
         String token = jwtUtilities.generateToken(userApp.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
+//        List<String> roles = userApp.getRoles().stream().map(Enum::name).toList();
+
+//        Principal principal = new UserAppPrincipal(userApp.getId(), loginDto.getEmail(), roles);
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        principal,
+//                        loginDto.getPassword(),
+//                        userApp.getAuthorities()
+//                )
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
         return new BearerToken(token, "Bearer");
     }
 
