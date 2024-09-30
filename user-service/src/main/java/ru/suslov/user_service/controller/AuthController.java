@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.suslov.user_service.dto.BearerToken;
 import ru.suslov.user_service.dto.LoginDto;
 import ru.suslov.user_service.dto.RegisterUserDto;
-import ru.suslov.user_service.dto.UserAppDto;
 import ru.suslov.user_service.service.UserAppService;
 
 import java.lang.reflect.Type;
@@ -30,14 +29,10 @@ import java.util.Map;
 @Slf4j
 public class AuthController {
     private final UserAppService userAppService;
-    private final ModelMapper modelMapper;
-    private final Type listType = new TypeToken<List<UserAppDto>>() {
-    }.getType();
 
     @Autowired
-    public AuthController(UserAppService userAppService, ModelMapper modelMapper) {
+    public AuthController(UserAppService userAppService) {
         this.userAppService = userAppService;
-        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/auth/register")
@@ -47,7 +42,7 @@ public class AuthController {
 
 
     @PostMapping("/auth/authenticate")
-    public String authenticate(@RequestBody LoginDto loginDto) {
+    public BearerToken authenticate(@RequestBody LoginDto loginDto) {
         return userAppService.authenticate(loginDto);
     }
 

@@ -100,7 +100,7 @@ public class UserAppService {
         }
     }
 
-    public String authenticate(LoginDto loginDto) {
+    public BearerToken authenticate(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getEmail(),
@@ -110,7 +110,7 @@ public class UserAppService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserApp userApp = userAppRepository.findByEmail(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         String token = jwtUtilities.generateToken(userApp.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
-        return "User login successful! Token: " + token;
+        return new BearerToken(token, "Bearer");
     }
 
 }

@@ -2,6 +2,8 @@ package ru.suslov.user_service.controller;
 
 import net.minidev.json.JSONObject;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.suslov.user_service.dto.BearerToken;
-import ru.suslov.user_service.dto.UserAppDto;
+import ru.suslov.user_service.model.UserApp;
 import ru.suslov.user_service.service.UserAppService;
 
-import java.util.List;
+import java.io.IOException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableTransactionManagement
@@ -28,6 +30,8 @@ class UserAppControllerTest {
     private final TestRestTemplate testRestTemplate;
     private final ModelMapper modelMapper;
     private final UserAppService userAppService;
+    private UserApp userApp;
+    private BearerToken tokent;
 
     @Autowired
     public UserAppControllerTest(TestRestTemplate testRestTemplate, UserAppService userAppService, ModelMapper modelMapper) {
@@ -36,48 +40,61 @@ class UserAppControllerTest {
         this.modelMapper = modelMapper;
     }
 
-//    @Test
-//    void postUserApp() {
-//        JSONObject personJson = new JSONObject();
-//        personJson.put("username", "Ivanov2000");
-//        personJson.put("firstName", "Petr");
-//        personJson.put("secondName", "Ivanov");
-//
-//        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/users", personJson, UserAppDto.class);
-//        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//
-//        userAppService.delete(userAppService.findById(response.getBody().getId()).orElse(null));
-//    }
+    @BeforeEach
+    public void init() throws IOException {
+        userApp = userAppService.findByEmail("ivanov@yandex.ru").orElse(null);
+        if (userApp != null) {
+            userAppService.delete(userApp);
+        }
 
-    @Test
-    void getHealthWithoutAuth() {
-        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/admin/health", UserAppDto.class);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        JSONObject userJson = new JSONObject();
+        userJson.put("username", "Ivanov2000");
+        userJson.put("firstName", "Petr");
+        userJson.put("secondName", "Ivanov");
+        userJson.put("email", "ivanov@yandex.ru");
+        userJson.put("password", "password");
+
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/register", userJson, BearerToken.class);
+        userApp = userAppService.findByEmail("ivanov@yandex.ru").orElse(null);
+        tokent = response.getBody();
+
     }
 
-    private BearerToken getAuthHeaderForUser() {
-        JSONObject personJson = new JSONObject();
-        personJson.put("username", "Ivanov2000");
-        personJson.put("firstName", "Petr");
-        personJson.put("secondName", "Ivanov");
-        personJson.put("email", "ivanov@yandex.ru");
-        personJson.put("password", "password");
+    @AfterEach
+    public void after() {
+        userAppService.delete(userApp);
+    }
 
-        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/register", personJson, BearerToken.class);
-
-        return response.getBody();
+    @Test
+    void getHealth_WithoutAuth() {
+        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/admin/health", String.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     void getHealth() {
-        BearerToken tokent = getAuthHeaderForUser();
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + tokent.getAccessToken());
         ResponseEntity<String> response = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
-//        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/admin/health", UserAppDto.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void getHealthWithAuthenticate() {
+        JSONObject userJson = new JSONObject();
+        userJson.put("email", "ivanov@yandex.ru");
+        userJson.put("password", "password");
+
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", userJson, BearerToken.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        tokent = response.getBody();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + tokent.getAccessToken());
+        var response2 = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+        Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
 }
