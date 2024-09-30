@@ -3,10 +3,12 @@ package ru.suslov.user_service.security;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -17,11 +19,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtilities {
 
-    //    @Value("${jwt.secret}") // todo
-    private String jwtSecret = "2b44b0b00ffbbc0a51e490438a97b2";
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-    //    @Value("${jwt.expirationTime}") // todo
-    private Long jwtExpirationTime = 60_000L;
+    @Value("${jwt.expirationTime}")
+    private Duration jwtExpirationTime;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -52,7 +54,7 @@ public class JwtUtilities {
     public String generateToken(String username, List<String> roles) {
 
         return Jwts.builder().setSubject(username).claim("role", roles).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(Date.from(Instant.now().plus(jwtExpirationTime, ChronoUnit.MILLIS)))
+                .setExpiration(Date.from(Instant.now().plus(jwtExpirationTime.toMillis(), ChronoUnit.MILLIS)))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret).compact();
     }
 

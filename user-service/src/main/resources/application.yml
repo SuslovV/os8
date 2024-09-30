@@ -17,7 +17,7 @@ spring:
       matching-strategy: ANT_PATH_MATCHER
 
 jwt:
-  secret: 2b44b0b00ffbbc0a51e490438a97b2
+  secret: 2b44b0b00ffbbc0a51e490438a97b20438a97b244b0b00ffbbc0a51
   expirationTime: 1m
   refreshTokenExpiration: 10m
 
