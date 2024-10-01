@@ -37,7 +37,7 @@ public class AuthController {
             })
     })
     @PostMapping("/auth/register")
-    public BearerToken register(@RequestBody RegisterUserDto registerUserDto) throws Exception {
+    public BearerToken register(@RequestBody RegisterUserDto registerUserDto) {
         return userAppService.register(registerUserDto);
     }
 

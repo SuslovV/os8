@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import ru.suslov.user_service.dto.BearerToken;
 import ru.suslov.user_service.dto.LoginDto;
 import ru.suslov.user_service.dto.RegisterUserDto;
+import ru.suslov.user_service.exception.BadRegistrationDataException;
 import ru.suslov.user_service.model.Role;
 import ru.suslov.user_service.model.UserApp;
 import ru.suslov.user_service.model.UserAppPrincipal;
@@ -80,12 +81,12 @@ public class UserAppService {
     }
 
     //    public ResponseEntity<?> register(RegisterUserDto registerUserDto) {
-    public BearerToken register(RegisterUserDto registerUserDto) throws Exception {
+    public BearerToken register(RegisterUserDto registerUserDto) {
         if (userAppRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
-            throw new Exception("email is already taken");
+            throw new BadRegistrationDataException("email is already taken: " + registerUserDto.getEmail());
 //            return new ResponseEntity<>("email is already taken !", HttpStatus.SEE_OTHER);
         } else if (userAppRepository.findByUsername(registerUserDto.getUsername()).isPresent()) {
-            throw new Exception("username is already taken");
+            throw new BadRegistrationDataException("username is already taken: " + registerUserDto.getUsername());
         }
         UserApp userApp = new UserApp();
         userApp.setEmail(registerUserDto.getEmail());
@@ -110,7 +111,6 @@ public class UserAppService {
         if (!passwordEncoder.matches(loginDto.getPassword(), userApp.getPassword())) {
             throw new BadCredentialsException("Exception trying to check password for user: " + loginDto.getUsername());
         }
-        // todo проверить пар
         String token = jwtUtilities.generateToken(userApp.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
 //        List<String> roles = userApp.getRoles().stream().map(Enum::name).toList();
 

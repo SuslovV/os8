@@ -99,12 +99,40 @@ class UserAppControllerTest {
 
     @Test
     void getHealthWithAuthenticate_BadPassword() {
+        JSONObject loginDtoJson = new JSONObject();
+        loginDtoJson.put("username", "Ivanov2000");
+        loginDtoJson.put("password", "bad password");
+
+        ResponseEntity<byte[]> response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", loginDtoJson, byte[].class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void postUser_ConflictEmail() {
+        JSONObject userJson = new JSONObject();
+        userJson.put("username", "Ivanov3");
+        userJson.put("firstName", "Petr");
+        userJson.put("secondName", "Ivanov");
+        userJson.put("email", "ivanov@yandex.ru");
+        userJson.put("password", "password");
+
+        ResponseEntity<byte[]> response =
+                testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/register", userJson, byte[].class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void postUser_ConflictUsername() {
         JSONObject userJson = new JSONObject();
         userJson.put("username", "Ivanov2000");
-        userJson.put("password", "bad password");
+        userJson.put("firstName", "Petr");
+        userJson.put("secondName", "Petrov");
+        userJson.put("email", "petrov@yandex.ru");
+        userJson.put("password", "password");
 
-        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", userJson, BearerToken.class);
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        ResponseEntity<byte[]> response =
+                testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/register", userJson, byte[].class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     }
 
 }
