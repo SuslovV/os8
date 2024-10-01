@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -85,28 +86,30 @@ public class UserAppService {
 //            return new ResponseEntity<>("email is already taken !", HttpStatus.SEE_OTHER);
         } else if (userAppRepository.findByUsername(registerUserDto.getUsername()).isPresent()) {
             throw new Exception("username is already taken");
-        } else {
-            UserApp userApp = new UserApp();
-            userApp.setEmail(registerUserDto.getEmail());
-            userApp.setFirstName(registerUserDto.getFirstName());
-            userApp.setUsername(registerUserDto.getUsername());
-            userApp.setSecondName(registerUserDto.getSecondName());
-            userApp.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
-            userApp.setRoles(Collections.singleton(Role.ADMIN));
-            userApp.setCreatedTime(OffsetDateTime.now());
-            userApp.setLastModifiedTime(userApp.getCreatedTime());
-            userApp.setActive(Boolean.TRUE);
-            userApp.setDeleted(Boolean.FALSE);
-
-            userAppRepository.save(userApp);
-            String token = jwtUtilities.generateToken(registerUserDto.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
-//            return new ResponseEntity<>(new BearerToken(token, "Bearer"), HttpStatus.OK);
-            return new BearerToken(token, "Bearer");
         }
+        UserApp userApp = new UserApp();
+        userApp.setEmail(registerUserDto.getEmail());
+        userApp.setFirstName(registerUserDto.getFirstName());
+        userApp.setUsername(registerUserDto.getUsername());
+        userApp.setSecondName(registerUserDto.getSecondName());
+        userApp.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
+        userApp.setRoles(Collections.singleton(Role.ADMIN));
+        userApp.setCreatedTime(OffsetDateTime.now());
+        userApp.setLastModifiedTime(userApp.getCreatedTime());
+        userApp.setActive(Boolean.TRUE);
+        userApp.setDeleted(Boolean.FALSE);
+
+        userAppRepository.save(userApp);
+        String token = jwtUtilities.generateToken(registerUserDto.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
+//            return new ResponseEntity<>(new BearerToken(token, "Bearer"), HttpStatus.OK);
+        return new BearerToken(token, "Bearer");
     }
 
     public BearerToken authenticate(LoginDto loginDto) {
         UserApp userApp = userAppRepository.findByUsername(loginDto.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (!passwordEncoder.matches(loginDto.getPassword(), userApp.getPassword())) {
+            throw new BadCredentialsException("Exception trying to check password for user: " + loginDto.getUsername());
+        }
         // todo проверить пар
         String token = jwtUtilities.generateToken(userApp.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
 //        List<String> roles = userApp.getRoles().stream().map(Enum::name).toList();

@@ -97,4 +97,14 @@ class UserAppControllerTest {
         Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    @Test
+    void getHealthWithAuthenticate_BadPassword() {
+        JSONObject userJson = new JSONObject();
+        userJson.put("username", "Ivanov2000");
+        userJson.put("password", "bad password");
+
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", userJson, BearerToken.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
 }
