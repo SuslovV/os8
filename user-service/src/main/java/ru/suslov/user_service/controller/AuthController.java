@@ -1,14 +1,12 @@
 package ru.suslov.user_service.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +17,6 @@ import ru.suslov.user_service.dto.BearerToken;
 import ru.suslov.user_service.dto.LoginDto;
 import ru.suslov.user_service.dto.RegisterUserDto;
 import ru.suslov.user_service.service.UserAppService;
-
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/v1")
@@ -35,12 +29,25 @@ public class AuthController {
         this.userAppService = userAppService;
     }
 
+    @Operation(summary = "User registration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = BearerToken.class)),
+                            mediaType = "application/json")
+            })
+    })
     @PostMapping("/auth/register")
     public BearerToken register(@RequestBody RegisterUserDto registerUserDto) throws Exception {
         return userAppService.register(registerUserDto);
     }
 
-
+    @Operation(summary = "User authentication")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = BearerToken.class)),
+                            mediaType = "application/json")
+            })
+    })
     @PostMapping("/auth/authenticate")
     public BearerToken authenticate(@RequestBody LoginDto loginDto) {
         return userAppService.authenticate(loginDto);

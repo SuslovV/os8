@@ -11,12 +11,12 @@ public class OpenAPIConfiguration {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        String appDesciption = "AOP";
+        String appDesciption = "User service";
         String appVersion = "";
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("AOP API")
+                        .title("User service API")
                         .version(appVersion)
                         .description(appDesciption)
                         .termsOfService("http://swagger.io/terms/")

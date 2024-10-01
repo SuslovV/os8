@@ -26,7 +26,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/v1/public/**", "/v1/users/**", "/v1/auth/**").permitAll()
+                        auth.requestMatchers("/v1/public/**", "/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/v1/admin/**").hasAuthority("ADMIN"));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
