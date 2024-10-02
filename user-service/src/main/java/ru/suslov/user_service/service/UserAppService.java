@@ -6,23 +6,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.suslov.user_service.dto.BearerToken;
 import ru.suslov.user_service.dto.LoginDto;
+import ru.suslov.user_service.dto.RefreshTokenDto;
 import ru.suslov.user_service.dto.RegisterUserDto;
 import ru.suslov.user_service.exception.BadRegistrationDataException;
+import ru.suslov.user_service.model.RefreshToken;
 import ru.suslov.user_service.model.Role;
 import ru.suslov.user_service.model.UserApp;
-import ru.suslov.user_service.model.UserAppPrincipal;
 import ru.suslov.user_service.repository.UserAppRepository;
 import ru.suslov.user_service.security.JwtUtilities;
 
-import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -33,10 +30,12 @@ public class UserAppService {
     private final JwtUtilities jwtUtilities;
     private PasswordEncoder passwordEncoder;
     private final UserAppRepository userAppRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Autowired
-    public UserAppService(UserAppRepository userAppRepository, PasswordEncoder passwordEncoder, JwtUtilities jwtUtilities) {
+    public UserAppService(UserAppRepository userAppRepository, PasswordEncoder passwordEncoder, JwtUtilities jwtUtilities, RefreshTokenService refreshTokenService) {
         this.userAppRepository = userAppRepository;
+        this.refreshTokenService = refreshTokenService;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtilities = jwtUtilities;
     }
@@ -80,7 +79,6 @@ public class UserAppService {
         userAppRepository.delete(userApp);
     }
 
-    //    public ResponseEntity<?> register(RegisterUserDto registerUserDto) {
     public BearerToken register(RegisterUserDto registerUserDto) {
         if (userAppRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
             throw new BadRegistrationDataException("email is already taken: " + registerUserDto.getEmail());
@@ -102,8 +100,8 @@ public class UserAppService {
 
         userAppRepository.save(userApp);
         String token = jwtUtilities.generateToken(registerUserDto.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
-//            return new ResponseEntity<>(new BearerToken(token, "Bearer"), HttpStatus.OK);
-        return new BearerToken(token, "Bearer");
+        RefreshToken refreshToken = refreshTokenService.add(userApp.getId());
+        return new BearerToken(token, refreshToken.getValue().toString(), "Bearer");
     }
 
     public BearerToken authenticate(LoginDto loginDto) {
@@ -112,18 +110,19 @@ public class UserAppService {
             throw new BadCredentialsException("Exception trying to check password for user: " + loginDto.getUsername());
         }
         String token = jwtUtilities.generateToken(userApp.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
-//        List<String> roles = userApp.getRoles().stream().map(Enum::name).toList();
+        RefreshToken refreshToken = refreshTokenService.add(userApp.getId());
 
-//        Principal principal = new UserAppPrincipal(userApp.getId(), loginDto.getEmail(), roles);
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        principal,
-//                        loginDto.getPassword(),
-//                        userApp.getAuthorities()
-//                )
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new BearerToken(token, "Bearer");
+        return new BearerToken(token, refreshToken.getValue().toString(), "Bearer");
+    }
+
+    public BearerToken refreshToken(RefreshTokenDto refreshTokenDto) {
+        RefreshToken refreshToken = refreshTokenService.findByValue(UUID.fromString(refreshTokenDto.getValue())).orElseThrow(() -> new UsernameNotFoundException("Token not found"));
+        refreshTokenService.verifyExpiration(refreshToken);
+        UserApp userApp = userAppRepository.findById(refreshToken.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String token = jwtUtilities.generateToken(userApp.getUsername(), userApp.getRoles().stream().map(Enum::name).toList());
+        refreshToken = refreshTokenService.add(userApp.getId());
+        return new BearerToken(token, refreshToken.getValue().toString(), "Bearer");
     }
 
 }

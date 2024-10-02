@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.suslov.user_service.dto.BearerToken;
 import ru.suslov.user_service.dto.LoginDto;
+import ru.suslov.user_service.dto.RefreshTokenDto;
 import ru.suslov.user_service.dto.RegisterUserDto;
 import ru.suslov.user_service.service.UserAppService;
 
@@ -51,6 +52,18 @@ public class AuthController {
     @PostMapping("/auth/authenticate")
     public BearerToken authenticate(@RequestBody LoginDto loginDto) {
         return userAppService.authenticate(loginDto);
+    }
+
+    @Operation(summary = "Refresh token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = BearerToken.class)),
+                            mediaType = "application/json")
+            })
+    })
+    @PostMapping("/auth/refreshtoken")
+    public BearerToken refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
+        return userAppService.refreshToken(refreshTokenDto);
     }
 
 }

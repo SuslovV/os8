@@ -31,7 +31,7 @@ class UserAppControllerTest {
     private final ModelMapper modelMapper;
     private final UserAppService userAppService;
     private UserApp userApp;
-    private BearerToken tokent;
+    private BearerToken token;
 
     @Autowired
     public UserAppControllerTest(TestRestTemplate testRestTemplate, UserAppService userAppService, ModelMapper modelMapper) {
@@ -56,7 +56,7 @@ class UserAppControllerTest {
 
         var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/register", userJson, BearerToken.class);
         userApp = userAppService.findByEmail("ivanov@yandex.ru").orElse(null);
-        tokent = response.getBody();
+        token = response.getBody();
 
     }
 
@@ -74,7 +74,7 @@ class UserAppControllerTest {
     @Test
     void getHealth() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + tokent.getAccessToken());
+        headers.add("Authorization", "Bearer " + token.getAccessToken());
         ResponseEntity<String> response = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -88,10 +88,26 @@ class UserAppControllerTest {
 
         var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", userJson, BearerToken.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        tokent = response.getBody();
+        token = response.getBody();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + tokent.getAccessToken());
+        headers.add("Authorization", "Bearer " + token.getAccessToken());
+        var response2 = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+        Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void getHealthWith_RefreshToken() {
+        JSONObject tokenJson = new JSONObject();
+        tokenJson.put("value", token.getRefreshToken());
+
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/refreshtoken", tokenJson, BearerToken.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        token = response.getBody();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token.getAccessToken());
         var response2 = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -106,6 +122,8 @@ class UserAppControllerTest {
         ResponseEntity<byte[]> response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", loginDtoJson, byte[].class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    // todo token expirationTime
 
     @Test
     void postUser_ConflictEmail() {
