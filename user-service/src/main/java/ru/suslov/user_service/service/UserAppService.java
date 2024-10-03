@@ -92,7 +92,7 @@ public class UserAppService {
         userApp.setUsername(registerUserDto.getUsername());
         userApp.setSecondName(registerUserDto.getSecondName());
         userApp.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
-        userApp.setRoles(Collections.singleton(Role.ADMIN));
+        userApp.setRoles(Collections.singleton(Role.USER));
         userApp.setCreatedTime(OffsetDateTime.now());
         userApp.setLastModifiedTime(userApp.getCreatedTime());
         userApp.setActive(Boolean.TRUE);

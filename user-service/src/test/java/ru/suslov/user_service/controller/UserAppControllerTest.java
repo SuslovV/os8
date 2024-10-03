@@ -13,6 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.suslov.user_service.dto.BearerToken;
+import ru.suslov.user_service.model.Role;
 import ru.suslov.user_service.model.UserApp;
 import ru.suslov.user_service.service.UserAppService;
 
@@ -66,22 +67,31 @@ class UserAppControllerTest {
     }
 
     @Test
-    void getHealth_WithoutAuth() {
-        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/admin/health", String.class);
+    void getHello_WithoutAuth() {
+        var response = testRestTemplate.getForEntity(RESOURCE_URL + localPort + "/v1/hello/user", String.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
-    void getHealth() {
+    void getHello() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token.getAccessToken());
-        ResponseEntity<String> response = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+        ResponseEntity<String> response = testRestTemplate.exchange("/v1/hello/user", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    void getHealthWithAuthenticate() {
+    void getHello_BadRole() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token.getAccessToken());
+        ResponseEntity<String> response = testRestTemplate.exchange("/v1/hello/admin", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void getHelloWithAuthenticate_User() {
         JSONObject userJson = new JSONObject();
         userJson.put("username", "Ivanov2000");
         userJson.put("password", "password");
@@ -92,13 +102,34 @@ class UserAppControllerTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token.getAccessToken());
-        var response2 = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+        var response2 = testRestTemplate.exchange("/v1/hello/user", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    void getHealthWith_RefreshToken() {
+    void getHelloWithAuthenticate_Admin() {
+        JSONObject userJson = new JSONObject();
+        userJson.put("username", "Ivanov2000");
+        userJson.put("password", "password");
+
+        userApp.getRoles().add(Role.ADMIN);
+        userAppService.save(userApp);
+
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/authenticate", userJson, BearerToken.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        token = response.getBody();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token.getAccessToken());
+
+        var response2 = testRestTemplate.exchange("/v1/hello/admin", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+        Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void getHelloWith_RefreshToken() {
         JSONObject tokenJson = new JSONObject();
         tokenJson.put("value", token.getRefreshToken());
 
@@ -108,13 +139,13 @@ class UserAppControllerTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token.getAccessToken());
-        var response2 = testRestTemplate.exchange("/v1/admin/health", HttpMethod.GET, new HttpEntity<>(headers), String.class);
+        var response2 = testRestTemplate.exchange("/v1/hello/user", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    void getHealthWithAuthenticate_BadPassword() {
+    void getHelloWithAuthenticate_BadPassword() {
         JSONObject loginDtoJson = new JSONObject();
         loginDtoJson.put("username", "Ivanov2000");
         loginDtoJson.put("password", "bad password");
