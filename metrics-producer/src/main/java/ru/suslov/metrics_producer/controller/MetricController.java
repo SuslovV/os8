@@ -2,9 +2,6 @@ package ru.suslov.metrics_producer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +13,12 @@ import ru.suslov.metrics_producer.service.KafkaProducerService;
 @RestController
 @RequestMapping("/v1")
 @Slf4j
-public class MetricsController {
+public class MetricController {
 
     private final KafkaProducerService kafkaProducerService;
 
     @Autowired
-    public MetricsController(KafkaProducerService kafkaProducerService) {
+    public MetricController(KafkaProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
     }
 

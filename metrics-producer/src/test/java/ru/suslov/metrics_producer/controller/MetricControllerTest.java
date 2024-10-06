@@ -17,7 +17,7 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MetricsControllerTest {
+class MetricControllerTest {
 
     private static final String RESOURCE_URL = "http://localhost:";
 
@@ -26,7 +26,7 @@ class MetricsControllerTest {
     private final TestRestTemplate testRestTemplate;
 
     @Autowired
-    public MetricsControllerTest(TestRestTemplate testRestTemplate) {
+    public MetricControllerTest(TestRestTemplate testRestTemplate) {
         this.testRestTemplate = testRestTemplate;
     }
 

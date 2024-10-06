@@ -1,11 +1,13 @@
 package ru.suslov.metrics_consumer.dto;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
 
 @Data
+@RequiredArgsConstructor
 public class MetricDto {
 
     private String applicationName;

@@ -18,7 +18,7 @@ public class KafKaListener {
         this.metricService = metricService;
     }
 
-    @KafkaListener(topics = {"metrics-topic"}, containerFactory = "metricKafkaListenerContainerFactory")
+    @KafkaListener(topics = {"metrics-topic"}, containerFactory = "metricKafkaListenerContainerFactory", groupId = "metric-group")
     public void consume(MetricDto metricDto) {
         metricService.save(metricDto);
     }

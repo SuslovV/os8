@@ -15,5 +15,5 @@ spring:
       matching-strategy: ANT_PATH_MATCHER
   kafka:
     bootstrap-servers: localhost:9092
-    consumer:
+  consumer:
       value-deserializer: org.apache.kafka.common.serialization.JsonDeserializer
