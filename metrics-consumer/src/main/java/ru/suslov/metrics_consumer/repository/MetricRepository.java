@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface MetricRepository extends JpaRepository<Metric, UUID> {
     Optional<Metric> findById(UUID id);
+    Optional<Metric> findByApplicationName(String applicationName);
 
 }

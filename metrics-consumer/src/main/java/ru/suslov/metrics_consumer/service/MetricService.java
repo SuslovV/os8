@@ -30,6 +30,10 @@ public class MetricService {
         return metricRepository.findById(id);
     }
 
+    public Optional<Metric> findByApplicationName(String applicationName) {
+        return metricRepository.findByApplicationName(applicationName);
+    }
+
     public Page<Metric> findAll(Pageable pageable) {
         return metricRepository.findAll(pageable);
     }
