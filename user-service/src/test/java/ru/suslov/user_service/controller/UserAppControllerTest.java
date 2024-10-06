@@ -129,6 +129,9 @@ class UserAppControllerTest {
 
         var response2 = testRestTemplate.exchange("/v1/hello/admin", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
+        userApp.getRoles().remove(Role.ADMIN);
+        userAppService.save(userApp);
+
         Assertions.assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

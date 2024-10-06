@@ -2,8 +2,10 @@
 
 Список проектов:
 - perfomance-statistics - Система учета времени выполнения методов в приложении с использованием Spring AOP
-- http-logging-spring-boot-starter - Spring boot starter логирующий входящие и исходящие http запросы и ответы
+- http-logging-spring-boot-starter - Spring boot starter логирующий в базу данных postgres входящие и исходящие http запросы и ответы, время выполнения запросов
 - user-service - Реализация аутентификации и авторизации с использованием Spring Security и JWT
+- metrics-producer - Реализация kafka продюсера отправляющего в очередь сообщения о метриках работы приложения
+- metrics-consumer - Реализация kafka консьюмера принимающего из очереди сообщения о метриках работы приложения и сохранящего их в базу данных postgres
 
 ## Собрать приложение
 ```

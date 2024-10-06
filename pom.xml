@@ -28,6 +28,8 @@
 	<description>os 8</description>
 	<modules>
 		<module>http-logging-spring-boot-starter</module>
+		<module>metrics-consumer</module>
+		<module>metrics-producer</module>
 		<module>perfomance-statistics</module>
 		<module>user-service</module>
 	</modules>
@@ -55,9 +57,19 @@
 				<version>3.2.8</version>
 			</dependency>
 			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt</artifactId>
+				<version>0.9.1</version>
+			</dependency>
+			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>42.7.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka</artifactId>
+				<version>3.2.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
