@@ -27,7 +27,7 @@ public class MetricController {
             @ApiResponse(responseCode = "200")
     })
     @PostMapping(value ="/metrics")
-    public void metrics(@RequestBody MetricDto metricDto) throws JsonProcessingException {
+    public void metrics(@RequestBody MetricDto metricDto) {
         kafkaProducerService.send("metrics-topic", metricDto);
 
     }
