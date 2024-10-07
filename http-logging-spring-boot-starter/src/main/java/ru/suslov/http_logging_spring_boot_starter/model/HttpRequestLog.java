@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table()
+@Table
 @Data
 @RequiredArgsConstructor
 public class HttpRequestLog {
