@@ -8,8 +8,8 @@
 - metrics-consumer - Реализация kafka консьюмера принимающего сообщения о метриках работы приложения и сохранящего их в базу данных postgres
 
 ## Собрать приложение
-Перед запуском сборки или тестов нужно создать базы данных - perfomance_statistics_test, user_service_test, metric_test
-Перед запуском приложений нужно создать базы данных - perfomance_statistics, user_service, metric
+Перед запуском сборки или тестов нужно создать базы данных - perfomance_statistics_test, user_service_test, metric_test.
+Перед запуском приложений нужно создать базы данных - perfomance_statistics, user_service, metric.
 ```
-mvn clean package
+$ mvn clean package
 ```

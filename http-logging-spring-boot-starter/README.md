@@ -14,7 +14,7 @@ http-logging:
 
 ## Собрать приложение
 ```
-mvn clean package
+$ mvn clean package
 ```
 
 ## OpenAPI

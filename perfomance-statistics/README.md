@@ -1,15 +1,13 @@
-# Демо-приложение работы с Spring AOP
-
-Система учета времени выполнения методов в приложении с использованием Spring AOP
+# Система учета времени выполнения методов в приложении с использованием Spring AOP
 
 ## Собрать приложение
 ```
-mvn clean package
+$ mvn clean package
 ```
 
 ## Запустить приложение
 ```
-mvn spring-boot:run
+$ java -jar ./target/perfomance-statistics.jar
 ```
 
 ## OpenAPI

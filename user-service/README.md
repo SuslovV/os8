@@ -7,12 +7,12 @@
 
 ## Собрать приложение
 ```
-mvn clean package
+$ mvn clean package
 ```
 
 ## Запустить приложение
 ```
-java -jar ./target/user-service.jar
+$ java -jar ./target/user-service.jar
 ```
 
 ## OpenAPI

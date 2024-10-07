@@ -1,14 +1,14 @@
-# Реализация kafka консьюмера принимающего из очереди сообщения о метриках приложения и сохранящего их в базу данных postgres
+# Реализация kafka консьюмера принимающего из kafka сообщения о метриках приложения и сохранящего их в базу данных postgres
 
 
 ## Собрать приложение
 ```
-mvn clean package
+$ mvn clean package
 ```
 
 ## Запустить приложение
 ```
-java -jar ./target/metrics-consumer.jar
+$ java -jar ./target/metrics-consumer.jar
 ```
 
 ## Интеграционные java-тесты
