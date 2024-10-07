@@ -11,6 +11,7 @@ import ru.suslov.metrics_consumer.model.Metric;
 import ru.suslov.metrics_consumer.repository.MetricRepository;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class MetricService {
         return metricRepository.findById(id);
     }
 
-    public Optional<Metric> findByApplicationName(String applicationName) {
+    public List<Metric> findByApplicationName(String applicationName) {
         return metricRepository.findByApplicationName(applicationName);
     }
 

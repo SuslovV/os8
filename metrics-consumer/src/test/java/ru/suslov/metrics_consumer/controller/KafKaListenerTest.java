@@ -75,13 +75,8 @@ class KafKaListenerTest {
                 .pollInterval(Duration.ofSeconds(3))
                 .atMost(15, SECONDS)
                 .untilAsserted(() -> {
-                    var metric = metricService.findByApplicationName(metricDto.getApplicationName());
-                    assertThat(metric.get().getApplicationName()).isEqualTo(metricDto.getApplicationName());
-//                    assertThat(metric).isPresent();
-//                    assertThat(metric.get().getCode()).isEqualTo("P100");
+                    var metrics = metricService.findByApplicationName(metricDto.getApplicationName());
+                    assertThat(metrics.size()).isGreaterThan(0);
                 });
-
-//        await().atMost(Duration.ofSeconds(6L)).untilAsserted(() -> assertThat(metricService.findByApplicationName(metricDto.getApplicationName()).get().getApplicationName()).isEqualTo(metricDto.getApplicationName()));
-//        await().until(() -> Objects.equals(metricDto.getApplicationName(), metricService.findByApplicationName(metricDto.getApplicationName()).get().getApplicationName()));
     }
 }
