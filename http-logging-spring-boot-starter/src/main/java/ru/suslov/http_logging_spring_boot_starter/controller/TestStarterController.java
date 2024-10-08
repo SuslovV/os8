@@ -9,26 +9,25 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/")
-public class ActuatorController2 {
-    private static final String API_VERSION = "v1";
+@RequestMapping("/v1")
+public class TestStarterController {
 
-    RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public ActuatorController2(RestTemplate restTemplate) {
+    public TestStarterController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    @GetMapping(value = API_VERSION + "/health")
+    @GetMapping(value = "/health")
     public ResponseEntity<String> health() {
         restTemplate.getForEntity("http://localhost:8080/v1/health2", null);
 
-        return new ResponseEntity("yes 22", HttpStatus.CREATED);
+        return new ResponseEntity("yes 22", HttpStatus.OK);
     }
 
-    @GetMapping(value = API_VERSION + "/health2")
+    @GetMapping(value = "/health2")
     public ResponseEntity<String> health2() {
-        return new ResponseEntity("yes 33", HttpStatus.ACCEPTED);
+        return new ResponseEntity("yes 33", HttpStatus.OK);
     }
 }

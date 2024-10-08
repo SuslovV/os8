@@ -1,6 +1,7 @@
 package ru.suslov.http_logging_spring_boot_starter.controller;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,38 +14,42 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.suslov.http_logging_spring_boot_starter.dto.ResourceDto;
+import ru.suslov.http_logging_spring_boot_starter.model.HttpRequestLog;
 import ru.suslov.http_logging_spring_boot_starter.model.Resource;
 import ru.suslov.http_logging_spring_boot_starter.model.Server;
+import ru.suslov.http_logging_spring_boot_starter.service.HttpRequestLogService;
 import ru.suslov.http_logging_spring_boot_starter.service.ResourceService;
 import ru.suslov.http_logging_spring_boot_starter.service.ServerService;
 
-import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableTransactionManagement
-class ResourceControllerTest {
+class HttpRequestLogControllerTest {
 
     private static final String RESOURCE_URL = "http://localhost:";
 
     @LocalServerPort
     private int localPort;
 
+    private final HttpRequestLogService httpRequestLogService;
     private final ResourceService resourceService;
     private final ServerService serverService;
     private final TestRestTemplate testRestTemplate;
     private Server server;
     private Resource resource;
+    private HttpRequestLog httpRequestLog;
 
     @Autowired
-    public ResourceControllerTest(TestRestTemplate testRestTemplate, ResourceService resourceService, ServerService serverService) {
+    public HttpRequestLogControllerTest(HttpRequestLogService httpRequestLogService, TestRestTemplate testRestTemplate, ResourceService resourceService, ServerService serverService) {
+        this.httpRequestLogService = httpRequestLogService;
         this.testRestTemplate = testRestTemplate;
         this.resourceService = resourceService;
         this.serverService = serverService;
     }
 
     @BeforeEach
-    public void init() throws IOException {
+    public void init() {
         server = serverService.findByName("localhost").orElseGet(() -> {
             server = new Server();
             server.setName("localhost");
@@ -57,6 +62,15 @@ class ResourceControllerTest {
             resource.setServer(server);
             return resourceService.save(resource);
         });
+
+        httpRequestLog = new HttpRequestLog();
+        httpRequestLog.setResource(resource);
+        httpRequestLogService.save(httpRequestLog);
+    }
+
+    @AfterEach
+    public void after() {
+        httpRequestLogService.delete(httpRequestLog);
     }
 
     @Test
@@ -64,7 +78,7 @@ class ResourceControllerTest {
         ResponseEntity<List<ResourceDto>> response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/resources?page=0&size=100", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
         });
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody()).size().isNotNull();
+        Assertions.assertThat(response.getBody()).size().isGreaterThan(0);
     }
 
 }
