@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import ru.suslov.http_logging_spring_boot_starter.dto.ResourceDto;
-import ru.suslov.http_logging_spring_boot_starter.model.Resource;
 import ru.suslov.http_logging_spring_boot_starter.service.ResourceService;
 
 import java.lang.reflect.Type;
@@ -48,20 +47,5 @@ public class ResourceController {
     @GetMapping("/resources")
     public List<ResourceDto> resources(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) {
         return modelMapper.map(resourceService.findAll(pageable).getContent(), listType);
-    }
-
-    @Operation(summary = "Add resource")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {
-                    @Content(schema = @Schema(implementation = Resource.class), mediaType = "application/json")
-            })
-//            ,
-//            @ApiResponse(responseCode = "500", content = {
-//                    @Content(schema = @Schema(implementation = ErrorResponse.class), mediaType = "application/json")
-//            })
-    })
-    @PostMapping("/resources")
-    public Resource resources(@RequestBody ResourceDto resourceDto, HttpServletRequest request, Map<String, String> headers) {
-        return resourceService.save(modelMapper.map(resourceDto, Resource.class));
     }
 }
