@@ -2,7 +2,7 @@
 
 - Создание нового пользователя и получение токена - /v1/auth/register
 - Получение токена - /v1/auth/authenticate
-- Обновление токена - /v1/auth/refreshtoken
+- Обновление токена - /v1/auth/refresh-token
 - Защищенные ресурсы - /v1/hello/user, /v1/hello/admin
 
 ## Собрать приложение

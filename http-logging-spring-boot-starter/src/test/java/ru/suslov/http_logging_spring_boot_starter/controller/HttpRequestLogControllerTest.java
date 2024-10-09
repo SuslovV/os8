@@ -13,7 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import ru.suslov.http_logging_spring_boot_starter.dto.ResourceDto;
+import ru.suslov.http_logging_spring_boot_starter.dto.HttpRequestLogDto;
 import ru.suslov.http_logging_spring_boot_starter.model.HttpRequestLog;
 import ru.suslov.http_logging_spring_boot_starter.model.Resource;
 import ru.suslov.http_logging_spring_boot_starter.model.Server;
@@ -21,6 +21,7 @@ import ru.suslov.http_logging_spring_boot_starter.service.HttpRequestLogService;
 import ru.suslov.http_logging_spring_boot_starter.service.ResourceService;
 import ru.suslov.http_logging_spring_boot_starter.service.ServerService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -74,8 +75,8 @@ class HttpRequestLogControllerTest {
     }
 
     @Test
-    void getResourcePage() {
-        ResponseEntity<List<ResourceDto>> response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/resources?page=0&size=100", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+    void getHttpRequestLogPage() {
+        ResponseEntity<ArrayList<HttpRequestLogDto>> response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/http-request-log?page=0&size=100", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
         });
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody()).size().isGreaterThan(0);

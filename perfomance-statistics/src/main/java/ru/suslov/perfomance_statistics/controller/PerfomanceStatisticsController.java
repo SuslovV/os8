@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,7 +50,7 @@ public class PerfomanceStatisticsController {
                             mediaType = "application/json")
             })
     })
-    @GetMapping("/perfomancestatistics")
+    @GetMapping("/perfomance-statistics")
     @TrackAsyncTime
     @Async
     public CompletableFuture<List<PerfomanceStatisticsDto>> perfomanceStatistics(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) {
@@ -65,7 +64,7 @@ public class PerfomanceStatisticsController {
                             mediaType = "application/json")
             })
     })
-    @GetMapping("/perfomancestatistics/aggregate")
+    @GetMapping("/perfomance-statistics/aggregate")
     @TrackTime
     public List<PerfomanceStatisticsAggregateDto> perfomanceStatisticsAggregateByMethod(@PageableDefault(size = 20, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) {
         var classStatistics = perfomanceStatisticsService.getPerfomanceStatisticsGroupByMethod();

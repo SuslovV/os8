@@ -140,7 +140,7 @@ class UserAppControllerTest {
         JSONObject tokenJson = new JSONObject();
         tokenJson.put("value", token.getRefreshToken());
 
-        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/refreshtoken", tokenJson, BearerToken.class);
+        var response = testRestTemplate.postForEntity(RESOURCE_URL + localPort + "/v1/auth/refresh-token", tokenJson, BearerToken.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         token = response.getBody();
 

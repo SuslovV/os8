@@ -61,7 +61,7 @@ public class AuthController {
                             mediaType = "application/json")
             })
     })
-    @PostMapping("/auth/refreshtoken")
+    @PostMapping("/auth/refresh-token")
     public BearerToken refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
         return userAppService.refreshToken(refreshTokenDto);
     }

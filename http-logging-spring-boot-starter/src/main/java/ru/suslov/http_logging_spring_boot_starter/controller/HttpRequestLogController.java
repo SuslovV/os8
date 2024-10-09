@@ -46,7 +46,7 @@ public class HttpRequestLogController {
                             mediaType = "application/json")
             })
     })
-    @GetMapping("/httprequestlog")
+    @GetMapping("/http-request-log")
     public List<HttpRequestLogDto> resources(@PageableDefault(size = 100, sort = "id") Pageable pageable, HttpServletRequest request, Map<String, String> headers) {
         return modelMapper.map(httpRequestLogService.findAll(pageable).getContent(), listType);
     }

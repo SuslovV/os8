@@ -1,6 +1,8 @@
 package ru.suslov.perfomance_statistics.controller;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +17,7 @@ import ru.suslov.perfomance_statistics.model.PerfomanceStatistics;
 import ru.suslov.perfomance_statistics.service.PerfomanceStatisticsService;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableTransactionManagement
@@ -27,6 +30,7 @@ class PerfomanceStatisticsControllerTest {
 
     private final TestRestTemplate testRestTemplate;
     private final PerfomanceStatisticsService perfomanceStatisticsService;
+    private PerfomanceStatistics perfomanceStatistics;
 
     @Autowired
     public PerfomanceStatisticsControllerTest(TestRestTemplate testRestTemplate, PerfomanceStatisticsService perfomanceStatisticsService) {
@@ -34,23 +38,32 @@ class PerfomanceStatisticsControllerTest {
         this.perfomanceStatisticsService = perfomanceStatisticsService;
     }
 
+    @BeforeEach
+    public void init() throws ExecutionException, InterruptedException {
+        perfomanceStatistics = perfomanceStatisticsService.save("MethodController", "method_get", 10).get();
+    }
+
+    @AfterEach
+    public void after() {
+        perfomanceStatisticsService.delete(perfomanceStatistics);
+    }
+
     @Test
     void getPerfomanceStatisticsPage() {
-        var response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/perfomancestatistics?page=0&size=100", HttpMethod.GET, null,
+        var response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/perfomance-statistics?page=0&size=100", HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<PerfomanceStatistics>>() {
                 });
-//        perfomanceStatisticsService.save(PerfomanceStatisticsController.class.getName(), , 10);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).size().isGreaterThan(0);
     }
 
     @Test
     void perfomanceStatisticsAggregate() {
-        var response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/perfomancestatistics/aggregate", HttpMethod.GET, null,
+        var response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/perfomance-statistics/aggregate", HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<PerfomanceStatisticsAggregateDto>>() {
                 });
-//        perfomanceStatisticsService.save(PerfomanceStatisticsController.class.getName(), , 10);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        Assertions.assertThat(response.getBody()).size().isNotNull();
+        Assertions.assertThat(response.getBody()).size().isGreaterThan(0);
     }
 
 }

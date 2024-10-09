@@ -64,7 +64,7 @@ class ResourceControllerTest {
         ResponseEntity<List<ResourceDto>> response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/resources?page=0&size=100", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
         });
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody()).size().isNotNull();
+        Assertions.assertThat(response.getBody()).size().isGreaterThan(0);
     }
 
 }

@@ -10,25 +10,16 @@ import java.util.UUID;
 public class HttpRequestLogDto {
 
     private UUID id;
-
-    private String resource;
-
+    private UUID resourceId;
+    private String resourceName;
     private Long executionTime;
-
     private boolean response;
-
     private String method;
-
     private Integer httpStatus;
-
-   private String requestType;
-
+    private String requestType;
     private Map<String, String> headers;
-
     private UUID httpRequestId;
-
     private OffsetDateTime createdTime;
-
     private OffsetDateTime lastModifiedTime;
 
 }
