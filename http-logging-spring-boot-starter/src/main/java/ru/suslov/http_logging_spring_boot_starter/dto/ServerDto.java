@@ -6,11 +6,11 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
-public class ResourceDto {
+public class ServerDto {
 
     private UUID id;
     private String name;
-    private ServerDto server;
+    private String path;
     private Boolean active;
     private Boolean deleted;
     private OffsetDateTime createdTime;

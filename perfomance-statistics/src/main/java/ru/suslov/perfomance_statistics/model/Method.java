@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -35,7 +34,7 @@ public class Method {
     @Column(length = 200)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "class_source_code_id")
     private ClassSourceCode classSourceCode;
 

@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.suslov.perfomance_statistics.dto.PerfomanceStatisticsAggregateDto;
+import ru.suslov.perfomance_statistics.dto.PerfomanceStatisticsDto;
 import ru.suslov.perfomance_statistics.model.PerfomanceStatistics;
 import ru.suslov.perfomance_statistics.service.PerfomanceStatisticsService;
 
@@ -51,7 +52,7 @@ class PerfomanceStatisticsControllerTest {
     @Test
     void getPerfomanceStatisticsPage() {
         var response = testRestTemplate.exchange(RESOURCE_URL + localPort + "/v1/perfomance-statistics?page=0&size=100", HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<PerfomanceStatistics>>() {
+                new ParameterizedTypeReference<List<PerfomanceStatisticsDto>>() {
                 });
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(response.getBody()).size().isGreaterThan(0);

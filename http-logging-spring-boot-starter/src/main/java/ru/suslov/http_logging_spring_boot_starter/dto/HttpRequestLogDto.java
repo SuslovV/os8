@@ -10,8 +10,7 @@ import java.util.UUID;
 public class HttpRequestLogDto {
 
     private UUID id;
-    private UUID resourceId;
-    private String resourceName;
+    private ResourceDto resource;
     private Long executionTime;
     private boolean response;
     private String method;

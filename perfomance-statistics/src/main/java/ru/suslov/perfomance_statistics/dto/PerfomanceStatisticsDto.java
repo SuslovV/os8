@@ -9,10 +9,7 @@ import java.util.UUID;
 public class PerfomanceStatisticsDto {
 
     private UUID id;
-
-    private String methodId;
-    private String methodName;
-
+    private MethodDto method;
     private long executionTime;
     private OffsetDateTime lastModifiedTime;
 

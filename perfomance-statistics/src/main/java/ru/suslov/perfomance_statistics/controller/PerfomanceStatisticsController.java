@@ -17,6 +17,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import ru.suslov.perfomance_statistics.annotation.TrackAsyncTime;
 import ru.suslov.perfomance_statistics.annotation.TrackTime;
+import ru.suslov.perfomance_statistics.dto.ClassSourceCodeDto;
+import ru.suslov.perfomance_statistics.dto.MethodDto;
 import ru.suslov.perfomance_statistics.dto.PerfomanceStatisticsAggregateDto;
 import ru.suslov.perfomance_statistics.dto.PerfomanceStatisticsDto;
 import ru.suslov.perfomance_statistics.service.PerfomanceStatisticsService;
@@ -70,9 +72,15 @@ public class PerfomanceStatisticsController {
         var classStatistics = perfomanceStatisticsService.getPerfomanceStatisticsGroupByMethod();
         return classStatistics.stream().map((el) -> {
             var methodPerfomanceStatisticsDto = new PerfomanceStatisticsAggregateDto();
-            methodPerfomanceStatisticsDto.setMethodId((UUID) el[0]);
-            methodPerfomanceStatisticsDto.setClassName((String) el[1]);
-            methodPerfomanceStatisticsDto.setMethodName((String) el[2]);
+
+            MethodDto methodDto = new MethodDto();
+            methodDto.setId((UUID) el[0]);
+            methodDto.setName((String) el[2]);
+            ClassSourceCodeDto classSourceCodeDto = new ClassSourceCodeDto();
+            classSourceCodeDto.setName((String) el[1]);
+            methodDto.setClassSourceCode(classSourceCodeDto);
+
+            methodPerfomanceStatisticsDto.setMethod(methodDto);
             methodPerfomanceStatisticsDto.setExecutionTimeSum(((Long) el[3]).longValue());
             methodPerfomanceStatisticsDto.setExecutionTimeAvg(((Long) el[4]).longValue());
             methodPerfomanceStatisticsDto.setExecutionTimeMin(((Long) el[5]).longValue());
